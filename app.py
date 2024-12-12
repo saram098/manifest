@@ -1,24 +1,17 @@
-from flask import Flask, render_template, request
+from flask import Flask, send_from_directory
 
 app = Flask(__name__)
 
-@app.route('/embed', methods=['GET', 'POST'])
-def embed():
-    if request.method == 'POST':
-        url = request.form['url']
-        return f'''
-            <h1>Website Embedder</h1>
-            <p>Preview of the website: <a href="{url}" target="_blank">{url}</a></p>
-            <iframe src="{url}" width="800" height="600" style="border:1px solid #ccc;"></iframe>
-        '''
-    return '''
-        <h1>Embed Website</h1>
-        <form method="post">
-            <label for="url">Enter website URL:</label><br>
-            <input type="url" id="url" name="url" required><br><br>
-            <button type="submit">Embed</button>
-        </form>
-    '''
+# Serve the index.html file
+@app.route('/')
+def home():
+    return send_from_directory('.', 'index.html')
+
+# Serve static assets (if any, such as images or stylesheets)
+@app.route('/<path:path>')
+def serve_file(path):
+    return send_from_directory('.', path)
 
 if __name__ == "__main__":
+    # Run the Flask app with SSL for Office Add-in compatibility
     app.run(ssl_context='adhoc', port=5000)
